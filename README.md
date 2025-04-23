@@ -26,8 +26,28 @@ TasteFinder é um sistema de recomendação de restaurantes baseado em:
 ---
 
 ## 🏗️ Estrutura do Projeto
-
-tastefinder/ ├── README.md ├── environment.yml ├── data/ │ ├── raw/ │ └── processed/ ├── notebooks/ │ ├── 01_eda.ipynb │ └── 02_modeling.ipynb ├── src/ │ ├── data/ │ ├── features/ │ ├── models/ │ └── visualization/ ├── app/ │ ├── main.py │ ├── model/ │ └── static/ ├── docker/ │ ├── docker-compose.yml │ └── Dockerfile ├── .gitignore └── LICENSE-
+* `README.md`: Este arquivo contém a descrição geral do seu projeto, instruções de uso, etc.
+* `environment.yml`: Arquivo que lista as dependências do seu projeto para criar um ambiente Conda.
+* `data/`: Diretório para armazenar os dados.
+    * `raw/`: Contém os dados brutos, sem processamento.
+    * `processed/`: Armazena os dados após o processamento e preparação.
+* `notebooks/`: Contém notebooks Jupyter para exploração de dados (EDA) e modelagem.
+    * `01_eda.ipynb`: Notebook para realizar a análise exploratória dos dados.
+    * `02_modeling.ipynb`: Notebook para desenvolver e avaliar modelos.
+* `src/`: Código fonte do seu projeto, organizado por funcionalidades.
+    * `data/`: Módulos relacionados à manipulação de dados.
+    * `features/`: Módulos para engenharia de features.
+    * `models/`: Módulos para definir e treinar modelos de machine learning.
+    * `visualization/`: Módulos para gerar visualizações.
+* `app/`: Código da sua aplicação web ou interface de usuário.
+    * `main.py`: Ponto de entrada da aplicação.
+    * `model/`: Arquivos relacionados ao modelo utilizado na aplicação.
+    * `static/`: Arquivos estáticos como CSS, JavaScript e imagens.
+* `docker/`: Arquivos relacionados à configuração do Docker para conteinerização.
+    * `docker-compose.yml`: Arquivo para definir e gerenciar múltiplos containers Docker.
+    * `Dockerfile`: Arquivo com as instruções para construir a imagem Docker.
+* `.gitignore`: Especifica arquivos e diretórios que o Git deve ignorar.
+* `LICENSE`: Arquivo contendo a licença do seu projeto.
 
 ---
 
