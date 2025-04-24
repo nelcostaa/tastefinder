@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: tastefinder-db
+    environment:
+      POSTGRES_USER: nelson
+      POSTGRES_PASSWORD: senha_segura
+      POSTGRES_DB: tastefinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - tastefinder_data:/var/lib/postgresql/data
+      - ./docker:/docker-entrypoint-initdb.d
+
+volumes:
+  tastefinder_data:
