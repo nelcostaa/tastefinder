@@ -83,7 +83,7 @@ conda activate tastefinder
 ## 📈 Status do Projeto
 
 - [x] Estrutura de diretórios criada
-- [ ] Configuração do ambiente Conda
+- [x] Configuração do ambiente Conda
 - [ ] Banco de dados PostgreSQL inicializado via Docker
 - [ ] Script de web scraping implementado
 - [ ] Processo ETL estruturado
