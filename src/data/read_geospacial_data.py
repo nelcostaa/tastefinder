@@ -4,13 +4,13 @@ from pathlib import Path
 import geopandas as gpd
 from shapely.geometry import Point
 
-path = Path("data/raw/DIVISA_DE_BAIRROS/")
-shp_path = path / "DIVISA_DE_BAIRROS.shp"
+data_path = Path("data")
+
+shp_path = data_path / "raw" / "DIVISA_DE_BAIRROS_SIRGAS" / "DIVISA_DE_BAIRROS.shp"
 
 gdf = gpd.read_file(shp_path)
 
 gdf["centroid"] = gdf.geometry.centroid
-print(gdf[["NOME", "geometry", "centroid"]].head())
 
 
 def offset_points(point: Point, distance: float, angle_deg: float) -> Point:
@@ -31,8 +31,19 @@ def offset_points(point: Point, distance: float, angle_deg: float) -> Point:
     return Point(point_x, point_y)
 
 
-for centro in gdf["centroid"]:
-    pontos = [offset_points(centro, 3000, ang) for ang in (0, 120, 240)]
+gdf["offset_points"] = gdf["centroid"].apply(
+    lambda c: [offset_points(c, 1000, ang) for ang in (0, 120, 240)]
+)
 
 
-print(pontos)
+gdf_offsets = gdf.explode("offset_points")
+gdf_offsets = gdf_offsets.set_geometry("offset_points")
+
+gdf_offsets.crs = gdf.crs
+gdf_offsets = gdf_offsets.to_crs(epsg=4326)
+
+gdf_offsets["longitude"] = gdf_offsets["offset_points"].geometry.x
+gdf_offsets["latitude"] = gdf_offsets["offset_points"].geometry.y
+
+processed_path = data_path / "processed" / "curitiba_bairros_offsets_2025-05.csv"
+gdf_offsets.to_csv(processed_path, index=False)
