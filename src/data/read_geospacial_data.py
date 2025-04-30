@@ -45,5 +45,9 @@ gdf_offsets = gdf_offsets.to_crs(epsg=4326)
 gdf_offsets["longitude"] = gdf_offsets["offset_points"].geometry.x
 gdf_offsets["latitude"] = gdf_offsets["offset_points"].geometry.y
 
+gdf_offsets["combined_coordinates"] = gdf_offsets.apply(
+    lambda row: f"{row['latitude']},{row['longitude']}", axis=1
+)
+
 processed_path = data_path / "processed" / "curitiba_bairros_offsets_2025-05.csv"
 gdf_offsets.to_csv(processed_path, index=False)
