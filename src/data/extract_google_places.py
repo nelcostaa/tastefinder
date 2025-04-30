@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from pathlib import Path
@@ -12,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def make_request(key: str, location: str, radius: int, type: str) -> object:
+def make_request(key: str, location: str, radius: int, type: str) -> list:
     params = {
         "location": location,
         "radius": radius,
@@ -25,15 +26,15 @@ def make_request(key: str, location: str, radius: int, type: str) -> object:
     )
 
     dados = response.json()
-    restaurantes = dados.get("results", [])
+    resultados = dados.get("results", [])
 
     if dados.get("next_page_token"):
-        get_next_page(dados, restaurantes, params)
+        get_next_page(dados, resultados, params)
 
-    return restaurantes
+    return resultados
 
 
-def get_next_page(dados, restaurantes: list, params: dict):
+def get_next_page(dados, resultados: list, params: dict):
     while dados.get("next_page_token"):
         ## CADA REQUEST RETORNA NO MÁXIMO 20 VALORES
         ## E AO FINAL UM TOKEN PARA IR PARA PRÓXIMA PÁGINA
@@ -47,19 +48,37 @@ def get_next_page(dados, restaurantes: list, params: dict):
             params=params,
         )
         dados = response.json()
-        restaurantes.extend(dados.get("results", []))
+        resultados.extend(dados.get("results", []))
 
-
-for r in restaurantes:
-    print(r["name"])
 
 data_path = Path("data")
 processed_data = data_path / "processed" / "curitiba_bairros_offsets_2025-05.csv"
 df = pd.read_csv(processed_data)
 
-api_key = os.getenv("GOOGLE_PLACES_API_KEY")  ## TROCAR AQUI PELA SUA API_KEY
-radius = 1500  ## RAIO DA BUSCA EM METROS
+api_key = os.getenv("GOOGLE_PLACES_API_KEY")  ## TROCAR AQUI PELA SUA CHAVE DE API
+radius = 1000  ## RAIO DA BUSCA EM METROS
 type_of_place = "restaurant"  ## TIPO DE ESTABELECIMENTO A SER CONSIDERADO
 
-for location in df["coord_grouped"]:
-    pass
+# Configure logging simples
+logging.basicConfig(level=logging.INFO)
+
+restaurantes = []
+
+for idx, location in enumerate(df["combined_coordinates"]):
+    try:
+        logging.info(f"Requesting location {idx+1}/{len(df)}: {location}")
+
+        resultados = make_request(api_key, location, radius, type_of_place)
+        restaurantes.extend(resultados)
+
+        # Salvar incrementalmente após cada request
+        pd.DataFrame(restaurantes).to_csv(
+            data_path / "processed" / "restaurantes_parcial.csv", index=False
+        )
+
+        # pausa para evitar rate-limiting severo
+        time.sleep(2)
+
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request falhou para {location}: {e}")
+        continue
