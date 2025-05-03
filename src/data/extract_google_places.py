@@ -73,7 +73,7 @@ for idx, location in enumerate(df["combined_coordinates"]):
 
         # Salvar incrementalmente após cada request
         pd.DataFrame(restaurantes).to_csv(
-            data_path / "processed" / "restaurantes_parcial.csv", index=False
+            data_path / "raw" / "restaurantes_parcial.csv", index=False
         )
 
         # pausa para evitar rate-limiting severo
